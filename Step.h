@@ -1,7 +1,6 @@
 #ifndef STEP_H
 #define STEP_H
 
-#endif // STEP_H
 
 struct Step
 {
@@ -12,3 +11,6 @@ struct Step
     int rowTo;
     int colTo;
 };
+
+
+#endif // STEP_H
