@@ -1,3 +1,6 @@
 # ignore .pro.user by Qt Creator
 ChineseChess.pro.user
 ChineseChess.pro.user*
+
+# ignore object file
+*.o
