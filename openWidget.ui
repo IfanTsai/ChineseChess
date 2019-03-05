@@ -14,7 +14,9 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-image: url(:/new/prefix1/chess/99bOOOPIC52.jpg);</string>
+   <string notr="true">#openWidget {
+	background-image: url(:/new/prefix1/chess/99bOOOPIC52.jpg);
+}</string>
   </property>
   <widget class="QPushButton" name="button1">
    <property name="geometry">
@@ -33,6 +35,26 @@
      <italic>true</italic>
      <bold>false</bold>
     </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	color: black;
+	background-color: #c0c1bb;	
+	border: none;
+	border-radius: 10px;
+
+}
+
+QPushButton:hover {
+	color: black;
+	background-color: #b99b7f;
+	border: none;
+	border-radius: 10px;
+
+}</string>
    </property>
    <property name="text">
     <string>自我对战</string>
@@ -60,6 +82,23 @@
    <property name="focusPolicy">
     <enum>Qt::StrongFocus</enum>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	color: black;
+	background-color: #c0c1bb;	
+	border: none;
+	border-radius: 10px;
+
+}
+
+QPushButton:hover {
+	color: black;
+	background-color: #b99b7f;
+	border: none;
+	border-radius: 10px;
+
+}</string>
+   </property>
    <property name="text">
     <string>人机对战</string>
    </property>
@@ -79,6 +118,23 @@
      <pointsize>17</pointsize>
      <italic>true</italic>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	color: black;
+	background-color: #c0c1bb;	
+	border: none;
+	border-radius: 10px;
+
+}
+
+QPushButton:hover {
+	color: black;
+	background-color: #b99b7f;
+	border: none;
+	border-radius: 10px;
+
+}</string>
    </property>
    <property name="text">
     <string>连网对战</string>

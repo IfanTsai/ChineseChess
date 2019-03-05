@@ -1,4 +1,4 @@
-//用来服务器选择IP的对话框
+// 用来服务器选择IP的对话框
 #include "ChooseIP.h"
 
 ChooseIP::ChooseIP()

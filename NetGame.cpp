@@ -24,8 +24,8 @@ NetGame::NetGame()
     connect(sendButton, SIGNAL(clicked(bool)), this, SLOT(chatSlot()));
     connect(sendEdit, SIGNAL(returnPressed()), this, SLOT(chatSlot()));
     textBrowser->append("等待连接...");
-    this->backButton->hide();//不显示悔棋按钮
-    /*程序主逻辑*/
+    this->backButton->hide();   // 不显示悔棋按钮
+    /* 程序主逻辑 */
     server = nullptr;
     socket = nullptr;
     choose = new ChooseSerOrCli;
@@ -35,14 +35,14 @@ NetGame::NetGame()
         ChooseIP *choose = new ChooseIP;
         choose->exec();
         qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-        isRedStart = qrand()%2;//随机产生
+        isRedStart = qrand() % 2; // 随机产生
         if(!isRedStart)
         {
             this->initStone(true);
         }
-        server = new QTcpServer(this);//创建服务器socket
-        server->listen(QHostAddress(choose->IPstr), 10101);//监听
-        //当有新的连接来的时候，触发信号，调用槽函数
+        server = new QTcpServer(this);      // 创建服务器socket
+        server->listen(QHostAddress(choose->IPstr), 10101);   // 监听
+        // 当有新的连接来的时候，触发信号，调用槽函数
         connect(server, SIGNAL(newConnection()), this, SLOT(newConnectionSlot()));
     }
     else
@@ -51,14 +51,14 @@ NetGame::NetGame()
         input->exec();
         socket = new QTcpSocket(this);//创建客户端socket
         socket->connectToHost(QHostAddress(input->IPstr), 10101);//连接
-        //当有服务器数据发送过来时，触发信号，调用槽函数
+        // 当有数据发送过来时，触发信号，调用槽函数
         connect(socket, SIGNAL(readyRead()), this, SLOT(recvSlot()));
     }
 }
 
 void NetGame::clicked(int clickedID, int row, int col)
 {
-    //选择了对方的棋子
+    // 选择了对方的棋子
     if(selectedID == -1 && isRedTurn != isRedSide)
     {
         return;
@@ -88,7 +88,7 @@ void NetGame::newConnectionSlot()
     buf[1] = isRedStart;
     socket->write(buf, 2);
 }
-//接收数据并处理
+// 接收数据并处理
 void NetGame::recvSlot()
 {
     QByteArray buf = socket->readAll();
@@ -120,11 +120,11 @@ void NetGame::chatSlot()
 {
     QString chatStr = sendEdit->text();
     sendEdit->clear();
-    if(chatStr.isEmpty())
+    if (chatStr.isEmpty())
     {
         return;
     }
-    if(choose->isServer)
+    if (choose->isServer)
     {
         chatStr = "Server:" + chatStr;
     }
@@ -134,6 +134,7 @@ void NetGame::chatSlot()
     }
     textBrowser->append(chatStr);
     chatStr = 2 + chatStr;
-    const char *buf = chatStr.toStdString().c_str();
-    socket->write(buf, chatStr.length());
+    //const char *buf = chatStr.toStdString().c_str();
+    //socket->write(buf, chatStr.length());
+    socket->write(chatStr.toUtf8().data());
 }

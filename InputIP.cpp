@@ -1,4 +1,4 @@
-//用来客户端输入IP的对话框
+// 用来客户端输入IP的对话框
 #include "InputIP.h"
 
 InputIP::InputIP()
