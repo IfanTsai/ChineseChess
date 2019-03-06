@@ -8,7 +8,7 @@ class WinWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WinWidget(QWidget *parent = 0);
+    explicit WinWidget(QWidget *parent = nullptr);
     WinWidget(int i);
 private:
     int color;

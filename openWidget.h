@@ -12,7 +12,7 @@ class openWidget : public QDialog
     Q_OBJECT
 
 public:
-    explicit openWidget(QWidget *parent = 0);
+    explicit openWidget(QWidget *parent = nullptr);
     ~openWidget();
 
 private:

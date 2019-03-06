@@ -675,7 +675,7 @@ void Board::reviveStone(int killID)
 }
 
 void Board::saveStep(int moveID, int killID, int rowTo, int colTo,
-                     QVector<Step*> &steps)
+                     QList<Step*> &steps)
 {
     int rowFrom, colFrom;
     getRowCol(translate(moveID), rowFrom, colFrom);

@@ -1,5 +1,5 @@
 #include "NetGame.h"
-int isRedStart;//用来表示谁先执红棋
+static int isRedStart;    // 用来表示谁先执红棋
 
 /*
  * 报文结构：
@@ -23,15 +23,15 @@ NetGame::NetGame()
     sendButton->setText("发送");
     connect(sendButton, SIGNAL(clicked(bool)), this, SLOT(chatSlot()));
     connect(sendEdit, SIGNAL(returnPressed()), this, SLOT(chatSlot()));
-    textBrowser->append("等待连接...");
     this->backButton->hide();   // 不显示悔棋按钮
     /* 程序主逻辑 */
     server = nullptr;
     socket = nullptr;
     choose = new ChooseSerOrCli;
     choose->exec();
-    if(choose->isServer)
+    if (choose->isServer)
     {
+        setWindowTitle("ChineseChess: Server");
         ChooseIP *choose = new ChooseIP;
         choose->exec();
         qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
@@ -42,11 +42,13 @@ NetGame::NetGame()
         }
         server = new QTcpServer(this);      // 创建服务器socket
         server->listen(QHostAddress(choose->IPstr), 10101);   // 监听
+        textBrowser->append(QString("IP: %1").arg(choose->IPstr));  // 在聊天框里显示IP
         // 当有新的连接来的时候，触发信号，调用槽函数
         connect(server, SIGNAL(newConnection()), this, SLOT(newConnectionSlot()));
     }
     else
     {
+        setWindowTitle("ChineseChess: Client");
         InputIP *input = new InputIP;
         input->exec();
         socket = new QTcpSocket(this);   // 创建客户端socket
@@ -54,27 +56,28 @@ NetGame::NetGame()
         // 当有数据发送过来时，触发信号，调用槽函数
         connect(socket, SIGNAL(readyRead()), this, SLOT(recvSlot()));
     }
+    textBrowser->append("等待连接...");
 }
 
 void NetGame::clicked(int clickedID, int row, int col)
 {
     // 选择了对方的棋子
-    if(selectedID == -1 && isRedTurn != isRedSide)
+    if (selectedID == -1 && isRedTurn != isRedSide)
     {
         return;
     }
     Board::clicked(clickedID, row, col);
     char buf[4];
     buf[0] = 1;
-    buf[1] = clickedID;
-    buf[2] = 9 - row;
-    buf[3] = 8 - col;
+    buf[1] = static_cast<char>(clickedID);
+    buf[2] = static_cast<char>(9 - row);
+    buf[3] = static_cast<char>(8 - col);
     socket->write(buf, 4);
 }
 
 void NetGame::newConnectionSlot()
 {
-    if(socket)
+    if (socket)
     {
         return;
     }
@@ -85,7 +88,7 @@ void NetGame::newConnectionSlot()
     connect(socket, SIGNAL(readyRead()), this, SLOT(recvSlot()));
     char buf[2];
     buf[0] = 0;
-    buf[1] = isRedStart;
+    buf[1] = static_cast<char>(isRedStart);
     socket->write(buf, 2);
 }
 // 接收数据并处理
@@ -93,7 +96,7 @@ void NetGame::recvSlot()
 {
     QByteArray buf = socket->readAll();
     char cmd = buf[0];
-    if(cmd == 0)
+    if (cmd == 0)
     {
         textBrowser->append("连接成功...");
         if(buf[1])
@@ -101,14 +104,14 @@ void NetGame::recvSlot()
             this->initStone(true);
         }
     }
-    else if(cmd == 1)
+    else if (cmd == 1)
     {
         int ID = buf[1];
         int row = buf[2];
         int col = buf[3];
         Board::clicked(ID, row, col);
     }
-    else if(cmd == 2)
+    else if (cmd == 2)
     {
         QString str = buf;
         QString chatContent = str.remove(0, 1);
@@ -126,11 +129,11 @@ void NetGame::chatSlot()
     }
     if (choose->isServer)
     {
-        chatStr = "Server:" + chatStr;
+        chatStr = "Server: " + chatStr;
     }
     else
     {
-        chatStr = "Client:" + chatStr;
+        chatStr = "Client: " + chatStr;
     }
     textBrowser->append(chatStr);
     chatStr = 2 + chatStr;

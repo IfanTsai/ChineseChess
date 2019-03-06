@@ -1,4 +1,4 @@
-//用来选择是服务器还是客户端的对话框
+// 用来选择是服务器还是客户端的对话框
 #include "ChooseSerOrCli.h"
 #include "ui_ChooseSerOrCli.h"
 
@@ -9,7 +9,7 @@ ChooseSerOrCli::ChooseSerOrCli(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowFlags(Qt::WindowTitleHint | Qt::CustomizeWindowHint |
                          Qt::WindowMinimizeButtonHint |
-                         Qt::WindowMaximizeButtonHint);//去掉对话框右上方关闭选项
+                         Qt::WindowMaximizeButtonHint);    // 去掉对话框右上方关闭选项
     connect(ui->yseButton, SIGNAL(clicked(bool)), this, SLOT(yesSlot()));
     connect(ui->noButton, SIGNAL(clicked(bool)), this, SLOT(noSlot()));
 }

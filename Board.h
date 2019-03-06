@@ -33,7 +33,8 @@ public:
     Stone stone[32];
     int selectedID;  // 用来标记某个棋子被选择了
     bool isRedTurn;  // 标记轮到哪一方
-    QVector<Step *> backSteps;   // 用来保存悔棋步骤
+    //QVector<Step *> backSteps;   // 用来保存悔棋步骤
+    QList<Step *> backSteps;   // 用来保存悔棋步骤
     bool isRedSide;  // 用来表示是否红棋在下方
 
 public:
@@ -63,7 +64,7 @@ public:
     void paintWin();   // 胜利窗口
     virtual void clicked(int clickedID, int row, int col);
     void saveStep(int moveID, int killID, int rowTo,
-                  int colTo, QVector<Step*> &steps);
+                  int colTo, QList<Step*> &steps);
 
 public slots:
     void aboutSlot();

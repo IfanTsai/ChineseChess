@@ -12,7 +12,7 @@ class ChooseSerOrCli : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChooseSerOrCli(QWidget *parent = 0);
+    explicit ChooseSerOrCli(QWidget *parent = nullptr);
     ~ChooseSerOrCli();
 
 private:
