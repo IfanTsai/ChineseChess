@@ -7,7 +7,7 @@ Stone::Stone()
 
 QString Stone::name()
 {
-    switch(this->type)
+    switch (this->type)
     {
     case Stone::PAO:
         return "炮";
@@ -23,37 +23,15 @@ QString Stone::name()
         return "士";
     case Stone::XIANG:
         return "相";
-    default:
-        return "错误";
     }
 }
 
 void Stone::init(int ID)
 {
-    struct
-    {
-        int row;
-        int col;
-        TYPE type;
-    }pos[16] = {
-    {0,0,Stone::CHE},
-    {0,1,Stone::MA},
-    {0,2,Stone::XIANG},
-    {0,3,Stone::SI},
-    {0,4,Stone::JIANG},
-    {0,5,Stone::SI},
-    {0,6,Stone::XIANG},
-    {0,7,Stone::MA},
-    {0,8,Stone::CHE},
-    {2,1,Stone::PAO},
-    {2,7,Stone::PAO},
-    {3,0,Stone::BING},
-    {3,2,Stone::BING},
-    {3,4,Stone::BING},
-    {3,6,Stone::BING},
-    {3,8,Stone::BING} };
-
-    if(ID<16)
+    // 棋盘左下角定义为（row, col） = （0, 0）
+    // ID:
+    //   0 - 15 红方   16 - 31 黑方
+    if (ID < 16)
     {
         this->row = pos[ID].row;
         this->col = pos[ID].col;
@@ -61,9 +39,9 @@ void Stone::init(int ID)
     }
     else
     {
-        this->col = 8-pos[ID-16].col;
-        this->row = 9-pos[ID-16].row;
-        this->type = pos[ID-16].type;
+        this->row = 9 - pos[ID - 16].row;
+        this->col = 8 - pos[ID - 16].col;
+        this->type = pos[ID - 16].type;
     }
     this->ID = ID;
     this->isDead = false;

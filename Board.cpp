@@ -53,10 +53,14 @@ Board::Board(QWidget *parent)
     palette.setBrush(QPalette::Window, brush);
     this->setPalette(palette);
 }
+
 Board::~Board()
 {
 }
-// 初始化棋子
+
+// init stones
+// 默认(isReverse == false): 红方在下, 黑方在上
+//      isReverse =- true :  黑方在下, 红方在上
 void Board::initStone(bool isReverse)
 {
     for (int i = 0; i < 32; i++)
@@ -65,12 +69,12 @@ void Board::initStone(bool isReverse)
     }
     if (isReverse)
     {
-        for (int i = 0;i<32;i++)
+        for (int i = 0; i < 32; i++)
         {
             this->stone[i].row = 9 - stone[i].row;
             this->stone[i].col = 8 - stone[i].col;
         }
-        update();
+        //update();
     }
     isRedSide = !isReverse;
 }
@@ -81,8 +85,7 @@ void Board::paintEvent(QPaintEvent *)
     QPainter *painter = new QPainter(this);
     painter->setBrush(QBrush("brown"));
     painter->setPen(QColor("red"));
-    // 直径
-    int d = 60;
+    int d = 60;      // 直径
     this->r = d / 2;
     for (int i = 1; i <= 8; i++)
     {
@@ -108,19 +111,15 @@ void Board::paintEvent(QPaintEvent *)
 
     painter->setFont(QFont("华文行楷", 40, 50));
     painter->setPen(Qt::white);
-    painter->drawText(rect,tr(" 楚河    汉界"), QTextOption(Qt::AlignCenter));
-    if (stone[4].isDead)   // 胜负判断
+    painter->drawText(rect, tr(" 楚河    汉界"), QTextOption(Qt::AlignCenter));
+    // 胜负判断
+    if (stone[4].isDead || stone[20].isDead)
     {
         this->close();
-        WinWidget *win = new WinWidget(1);
+        WinWidget *win = new WinWidget(stone[4].isDead ? 1 : 0);
         win->show();
     }
-    else if (stone[20].isDead) // 胜负判断
-    {
-        this->close();
-        WinWidget *win = new WinWidget(0);
-        win->show();
-    }
+
     // paint stone
     for (int i = 0; i < 32; i++)
     {
@@ -130,13 +129,16 @@ void Board::paintEvent(QPaintEvent *)
 
 void Board::mouseReleaseEvent(QMouseEvent *ev)
 {
+    // 若不是左键, 则不处理
     if (ev->button() != Qt::LeftButton)
     {
+        QWidget::mouseReleaseEvent(ev);
         return;
     }
     QPoint point = ev->pos();
     int row, col;
-    if (getRowCol(point, row ,col) == false)   // click on the outside of the board
+    // click on the outside of the board
+    if (getRowCol(point, row ,col) == false)
     {
         return;
     }
@@ -180,6 +182,7 @@ QPoint Board::translate(int ID)
     point.ry() = (this->stone[ID].row + 1) * r * 2;
     return point;
 }
+
 // 获取棋子坐标的函数重载
 QPoint Board::translate(int row, int col)
 {
@@ -188,6 +191,7 @@ QPoint Board::translate(int row, int col)
     point.ry() = (row + 1)* r * 2;
     return point;
 }
+
 // 获取鼠标点击的坐标，并判断是否点击在棋盘内
 bool Board::getRowCol(QPoint point, int &row, int &col)
 {
@@ -242,8 +246,6 @@ bool Board::canMove(int moveID, int row, int col, int killID)
             return canMoveMA(moveID, row, col);
         case Stone::PAO:
             return canMovePAO(moveID, row, col, killID);
-        default:
-            return false;
         }
     }
 }
@@ -744,7 +746,6 @@ void Board::returnSlot()
         openWidget *w = new openWidget;
         w->show();
         this->close();
-        this->destroy();
     }
     else
     {

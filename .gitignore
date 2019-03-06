@@ -4,3 +4,4 @@ ChineseChess.pro.user*
 
 # ignore object file
 *.o
+*.obj

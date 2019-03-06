@@ -8,7 +8,7 @@ int isRedStart;//用来表示谁先执红棋
 */
 NetGame::NetGame()
 {
-    /*界面处理*/
+    /* 界面处理 */
     this->resize(800, 660);
     this->setMinimumSize(800, 660);
     this->setMaximumSize(800, 660);
@@ -35,8 +35,8 @@ NetGame::NetGame()
         ChooseIP *choose = new ChooseIP;
         choose->exec();
         qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-        isRedStart = qrand() % 2; // 随机产生
-        if(!isRedStart)
+        isRedStart = qrand() % 2;   // 随机产生先手 (红方先手)
+        if (!isRedStart)
         {
             this->initStone(true);
         }
@@ -49,8 +49,8 @@ NetGame::NetGame()
     {
         InputIP *input = new InputIP;
         input->exec();
-        socket = new QTcpSocket(this);//创建客户端socket
-        socket->connectToHost(QHostAddress(input->IPstr), 10101);//连接
+        socket = new QTcpSocket(this);   // 创建客户端socket
+        socket->connectToHost(QHostAddress(input->IPstr), 10101);   // 连接
         // 当有数据发送过来时，触发信号，调用槽函数
         connect(socket, SIGNAL(readyRead()), this, SLOT(recvSlot()));
     }
@@ -78,10 +78,10 @@ void NetGame::newConnectionSlot()
     {
         return;
     }
-    //接收连接，等同于C语言里的accept，返回值类似于C语言里的文件描述符
+    // 接收连接，等同于C语言里的accept，返回值类似于C语言里的文件描述符
     socket = server->nextPendingConnection();
     textBrowser->append("连接成功...");
-    //当有客户端数据发送过来时，触发信号，调用槽函数
+    // 当有客户端数据发送过来时，触发信号，调用槽函数
     connect(socket, SIGNAL(readyRead()), this, SLOT(recvSlot()));
     char buf[2];
     buf[0] = 0;
