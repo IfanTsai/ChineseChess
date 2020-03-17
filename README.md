@@ -10,9 +10,9 @@ Windows、 Linux、 Android 等多平台的运行
 
 ## Screenshot
 
-![open.png](./screenshot/open.png)
+![open.png](https://img.caiyifan.cn/open.png)
 
-![singleGame.png](./screenshot/singleGame.png)
+![singleGame.png](https://img.caiyifan.cn/singleGame.png)
 
-![netGame.png](./screenshot/netGame.png)
+![netGame.png](https://img.caiyifan.cn/netGame.png)
 
