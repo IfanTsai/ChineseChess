@@ -1,7 +1,6 @@
 #ifndef STEP_H
 #define STEP_H
 
-
 struct Step
 {
     int moveID;

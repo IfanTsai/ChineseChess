@@ -29,25 +29,20 @@ NetGame::NetGame()
     socket = nullptr;
     choose = new ChooseSerOrCli;
     choose->exec();
-    if (choose->isServer)
-    {
+    if (choose->isServer) {
         setWindowTitle("ChineseChess: Server");
         ChooseIP *choose = new ChooseIP;
         choose->exec();
-        qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+        qsrand(static_cast<uint>(QTime(0,0,0).secsTo(QTime::currentTime()) ));
         isRedStart = qrand() % 2;   // 随机产生先手 (红方先手)
         if (!isRedStart)
-        {
             this->initStone(true);
-        }
         server = new QTcpServer(this);      // 创建服务器socket
         server->listen(QHostAddress(choose->IPstr), 10101);   // 监听
         textBrowser->append(QString("IP: %1").arg(choose->IPstr));  // 在聊天框里显示IP
         // 当有新的连接来的时候，触发信号，调用槽函数
         connect(server, SIGNAL(newConnection()), this, SLOT(newConnectionSlot()));
-    }
-    else
-    {
+    } else {
         setWindowTitle("ChineseChess: Client");
         InputIP *input = new InputIP;
         input->exec();
@@ -63,9 +58,8 @@ void NetGame::clicked(int clickedID, int row, int col)
 {
     // 选择了对方的棋子
     if (selectedID == -1 && isRedTurn != isRedSide)
-    {
         return;
-    }
+
     Board::clicked(clickedID, row, col);
     char buf[4];
     buf[0] = 1;
@@ -78,9 +72,8 @@ void NetGame::clicked(int clickedID, int row, int col)
 void NetGame::newConnectionSlot()
 {
     if (socket)
-    {
         return;
-    }
+
     // 接收连接，等同于C语言里的accept，返回值类似于C语言里的文件描述符
     socket = server->nextPendingConnection();
     textBrowser->append("连接成功...");
@@ -96,26 +89,26 @@ void NetGame::recvSlot()
 {
     QByteArray buf = socket->readAll();
     char cmd = buf[0];
-    if (cmd == 0)
-    {
-        textBrowser->append("连接成功...");
-        if(buf[1])
-        {
-            this->initStone(true);
+    switch (cmd) {
+        case 0: {
+            textBrowser->append("连接成功...");
+            if (buf[1])
+                this->initStone(true);
+            break;
         }
-    }
-    else if (cmd == 1)
-    {
-        int ID = buf[1];
-        int row = buf[2];
-        int col = buf[3];
-        Board::clicked(ID, row, col);
-    }
-    else if (cmd == 2)
-    {
-        QString str = buf;
-        QString chatContent = str.remove(0, 1);
-        textBrowser->append(chatContent);
+        case 1: {
+            int ID = buf[1];
+            int row = buf[2];
+            int col = buf[3];
+            Board::clicked(ID, row, col);
+            break;
+        }
+        case 2: {
+            QString str = buf;
+            QString chatContent = str.remove(0, 1);
+            textBrowser->append(chatContent);
+            break;
+        }
     }
 }
 
@@ -124,17 +117,9 @@ void NetGame::chatSlot()
     QString chatStr = sendEdit->text();
     sendEdit->clear();
     if (chatStr.isEmpty())
-    {
         return;
-    }
-    if (choose->isServer)
-    {
-        chatStr = "Server: " + chatStr;
-    }
-    else
-    {
-        chatStr = "Client: " + chatStr;
-    }
+
+    chatStr = (choose->isServer ? "Server: " : "Client: ") + chatStr;
     textBrowser->append(chatStr);
     chatStr = 2 + chatStr;
     //const char *buf = chatStr.toStdString().c_str();

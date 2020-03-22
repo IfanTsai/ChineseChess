@@ -11,13 +11,10 @@ ChooseIP::ChooseIP()
     layout->addWidget(box);
     layout->addWidget(button);
     QList<QHostAddress> addrList = QNetworkInterface::allAddresses();
-    foreach(QHostAddress addr, addrList)
-    {
+    foreach (QHostAddress addr, addrList) {
         QString addrStr = QHostAddress(addr.toIPv4Address()).toString();
         if(addrStr == "0.0.0.0" || addrStr == "127.0.0.1")
-        {
             continue;
-        }
         box->addItem(addrStr);
     }
     connect(button, SIGNAL(clicked(bool)), this, SLOT(chooseAddr()));

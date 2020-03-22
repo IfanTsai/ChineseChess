@@ -13,13 +13,10 @@ WinWidget::WinWidget(int i)
 void WinWidget::paintEvent(QPaintEvent *)
 {
     QPainter *painter = new QPainter(this);
-    if (this->color)
-    {
+    if (this->color) {
         painter->setPen(Qt::red);
         this->setWindowTitle("红方胜出，黑方战败");
-    }
-    else
-    {
+    } else {
         painter->setPen(Qt::black);
         this->setWindowTitle("黑方胜出，红方战败");
     }

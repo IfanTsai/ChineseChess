@@ -5,3 +5,10 @@ ChineseChess.pro.user*
 # ignore object file
 *.o
 *.obj
+chinaChess
+
+# Qt-es
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
