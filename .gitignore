@@ -12,3 +12,6 @@ moc_*.cpp
 moc_*.h
 qrc_*.cpp
 ui_*.h
+Makefile*
+/.qmake.cache
+/.qmake.stash
