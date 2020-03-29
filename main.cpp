@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     w.show();
 
     /* 设置字体 */
-    int id = QFontDatabase::addApplicationFont("./Fonts/华文行楷.ttf");
+    int id = QFontDatabase::addApplicationFont(":/new/prefix1/Fonts/华文行楷.ttf");
     QString str = QFontDatabase::applicationFontFamilies(id).at(0);
     QFont font(str,10);
     font.setPointSize(20);

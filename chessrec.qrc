@@ -2,5 +2,6 @@
     <qresource prefix="/new/prefix1">
         <file>chess/99bOOOPIC52.jpg</file>
         <file>chess/bg.jpeg</file>
+        <file>Fonts/华文行楷.ttf</file>
     </qresource>
 </RCC>
