@@ -12,6 +12,8 @@ Windows、 Linux、 Android 等多平台的运行
 
 ![open.png](https://img.caiyifan.cn/open.png)
 
+> 注: 下图中棋子边缘的锯齿已消除, 只是图片未更新
+
 ![singleGame.png](https://img.caiyifan.cn/singleGame.png)
 
 ![netGame.png](https://img.caiyifan.cn/netGame.png)
