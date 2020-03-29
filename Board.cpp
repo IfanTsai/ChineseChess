@@ -144,16 +144,19 @@ void Board::drawStone(QPainter *&painter, int ID)
     if (stone[ID].isDead)
         return;
 
+    painter->setRenderHints(QPainter::Antialiasing);  // 消除棋子锯齿
     if (selectedID == ID) {
         painter->setBrush(QColor(64, 224, 205));
     } else {
-        QBrush brush(stone[ID].isRed ?  QColor(Qt::yellow) : QColor(135, 206, 250));
+        QBrush brush(stone[ID].isRed ? QColor(Qt::yellow) : QColor(135, 206, 250));
         painter->setBrush(brush);
     }
+
     QPen pen(Qt::white, 2);
     painter->setPen(pen);
     painter->drawEllipse(translate(ID), r, r);
     painter->setPen(Qt::black);
+
     if (stone[ID].isRed)
         painter->setPen(Qt::red);
 
