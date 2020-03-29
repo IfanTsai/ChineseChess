@@ -15,7 +15,7 @@ void SingleGame::clicked(int clickedID, int row, int col)
         Board::clicked(clickedID, row, col);
 
     if (!this->isRedTurn)  // 紧接着上面玩家走了之后，isRedTurn为false，该函数自动进入，轮到电脑走
-        QTimer::singleShot(10, this, SLOT(computerMove()));
+        QTimer::singleShot(100, this, SLOT(computerMove()));
 }
 void SingleGame::computerMove()
 {
@@ -53,25 +53,27 @@ void SingleGame::getAllPossibleMove(QList<Step *> &steps)
         if (stone[i].isDead)
             continue;
         int eachRowBegin = 0, eachRowEnd = 9, eachColBegin = 0, eachColEnd = 8;
-        if (i == 5 || i == 21) {  // 士优化
+        if (stone[i].type == Stone::SI) {  // 士优化
             eachRowBegin = stone[i].row -1 ;
             eachRowEnd = stone[i].row + 1;
             eachColBegin = stone[i].col - 1;
             eachColEnd = stone[i].col + 1;
-        } else if (i == 4 || i == 20) {   // 将优化
+        } else if (stone[i].type == Stone::JIANG) {   // 将优化
             eachRowBegin = stone[i].row -1 ;
             eachRowEnd = stone[i].row + 1;
             eachColBegin = stone[i].col - 1;
             eachColEnd = stone[i].col + 1;
-            int killID = ( (i-16) > 0 ) ? (i - 16) : (i + 16);
+            int killID = ( (i - 16) > 0 ) ? (i - 16) : (i + 16);
             if (!stone[killID].isDead) {
-                if (this->canMove(i, stone[killID].row, stone[killID].col, killID))
+                if (this->canMove(i, stone[killID].row, stone[killID].col, killID)) {
                     this->saveStep(i, killID, stone[killID].row, stone[killID].col, steps);
+                    continue;
+                }
             }
         } else if (stone[i].type == Stone::BING) { // 兵优化
             if (stone[i].isRed) {
                 if (stone[i].row > 4) {
-                    eachRowEnd =  eachRowBegin = stone[i].row - 1;
+                    eachRowEnd = eachRowBegin = stone[i].row - 1;
                     eachColBegin = eachColEnd = stone[i].col;
                 } else {
                     eachRowBegin = eachRowEnd = stone[i].row - 1;
@@ -129,12 +131,18 @@ int SingleGame::calcScore()
     for (int i = 0; i < 16; i++) {
         if (stone[i].isDead)
             continue;
-        blackScore += chessScore[stone[i].type];
+        if (stone[i].type == Stone::BING && stone[i].row > 4)  // 兵分值升级
+            blackScore += (chessScore[Stone::BING] * 10);
+        else
+            blackScore += chessScore[stone[i].type];
     }
     for (int i = 16; i < 32; i++) {
         if (stone[i].isDead)
             continue;
-        redScore += chessScore[stone[i].type];
+        if (stone[i].type == Stone::BING && stone[i].row < 5) // 兵分值升级
+            redScore += (chessScore[Stone::BING] * 10);
+        else
+            redScore += chessScore[stone[i].type];
     }
     int totalScore = blackScore - redScore;
     return totalScore;
@@ -146,7 +154,7 @@ int SingleGame::getMinScore(int deep, int currentMaxScore)
 
     QList<Step *> steps;
     getAllPossibleMove(steps);
-    int minScore = 100000;
+    int minScore = INT_MAX;
     while (steps.count()) {
         Step *step = steps.front();
         steps.removeFirst();
@@ -172,15 +180,9 @@ int SingleGame::getMaxScore(int deep, int currentMinScore)
     if (!deep)
         return calcScore();
 
-    /****************/
-    /*int score = calcScore();
-    if (score > 30)
-        return score;
-    */
-    /****************/
     QList<Step *> steps;
     getAllPossibleMove(steps);
-    int maxScore = -100000;
+    int maxScore = INT_MIN;
     while (steps.count()) {
         Step *step = steps.front();
         steps.removeFirst();
@@ -206,7 +208,7 @@ Step* SingleGame::computerGetBestMove()
 {
     QList<Step *> steps;
     getAllPossibleMove(steps);
-    int maxScore = -100000;
+    int maxScore = INT_MIN;
     Step* bestStep = nullptr;
     while (steps.count()) {
         Step *step = steps.front();

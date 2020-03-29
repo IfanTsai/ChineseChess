@@ -117,6 +117,9 @@ void Board::paintEvent(QPaintEvent *)
     // paint stone
     for (int i = 0; i < 32; i++)
         this->drawStone(painter, i);
+
+    delete painter;
+    painter = nullptr;
 }
 
 void Board::mouseReleaseEvent(QMouseEvent *ev)
@@ -132,7 +135,7 @@ void Board::mouseReleaseEvent(QMouseEvent *ev)
     if (getRowCol(point, row ,col) == false)
         return;
 
-    //qDebug()<<"row,col = "<<row<<col;
+    //qDebug() << "row,col = "<<row<<col;
     int clickedID = getStoneID(row, col);
     clicked(clickedID, row, col);
 }
@@ -159,11 +162,11 @@ void Board::drawStone(QPainter *&painter, int ID)
     painter->drawText(rect, stone[ID].name(), QTextOption(Qt::AlignCenter));
 }
 
-// get stone's coordinate
+// 获取棋子坐标
 QPoint Board::translate(int ID)
 {
     QPoint point;
-    point.rx() = (this->stone[ID].col + 1) * r * 2;   // 注意坐标与行列的关系，x对应列，y对应行
+    point.rx() = (this->stone[ID].col + 1) * r * 2;  // 注意坐标与行列的关系，x对应列，y对应行
     point.ry() = (this->stone[ID].row + 1) * r * 2;
     return point;
 }
@@ -172,30 +175,27 @@ QPoint Board::translate(int ID)
 QPoint Board::translate(int row, int col)
 {
     QPoint point;
-    point.rx() = (col + 1) * r * 2;     //  注意坐标与行列的关系，x对应列，y对应行
-    point.ry() = (row + 1)* r * 2;
+    point.rx() = (col + 1) * r *2;  // 注意坐标与行列的关系，x对应列，y对应行
+    point.ry() = (row + 1) * r * 2;
     return point;
 }
-
 // 获取鼠标点击的坐标，并判断是否点击在棋盘内
 bool Board::getRowCol(QPoint point, int &row, int &col)
 {
     // 简单直接，易于理解，但效率不高
-    /*for(row = 0;row<10;row++)
-    {
-        for(col = 0;col<9;col++)
-        {
+#if 0
+    for (row = 0; row < 10;  row++) {
+        for (col = 0; col < 9; col++) {
             QPoint p = translate(row, col);
             int dx = p.x() - point.x();
             int dy = p.y() - point.y();
-            int distance = dx*dx + dy*dy;
-            if(distance <= r*r)
-            {
+            int distance = dx * dx + dy * dy;
+            if (distance <= r * r)
                 return true;
-            }
         }
     }
-    return false;  // 点击在棋盘外*/
+    return false;    // 点击在棋盘外
+#endif
 
     // 注意将像素坐标先+r再转换为行列值
     //（注：+r再除是类比了四舍五入的想法，圆心在行列交叉处，点击在圆心上方应该向大于它的数取整）
@@ -207,8 +207,8 @@ bool Board::getRowCol(QPoint point, int &row, int &col)
 
 bool Board::canMove(int moveID, int row, int col, int killID)
 {
-    if (stone[moveID].isRed == stone[killID].isRed) { // 如果要吃掉的棋子不是敌方的
-        selectedID = killID;   // 换选择
+    if (stone[moveID].isRed == stone[killID].isRed) {  // 如果要吃掉的棋子不是敌方的
+        selectedID = killID; // 换选择
         update();
         return false;
     } else {
@@ -228,10 +228,9 @@ bool Board::canMove(int moveID, int row, int col, int killID)
             case Stone::PAO:
                 return canMovePAO(moveID, row, col, killID);
         }
+        return false;
     }
-    return false;
 }
-
 bool Board::canMovePAO(int moveID, int row, int col, int killID)
 {
     if ( !(stone[moveID].row == row || stone[moveID].col == col) )
@@ -240,16 +239,17 @@ bool Board::canMovePAO(int moveID, int row, int col, int killID)
     if (killID == -1)
         return isLineNull(moveID, row, col);
 
-    int count1 = 0;//用来计算要移动的棋子和要被吃的棋子之间棋子的个数
+    int count1 = 0;  // 用来计算要移动的棋子和要被吃的棋子之间棋子的个数
     int count2 = 0;
     int count3 = 0;
     int count4 = 0;
-    /*for (int i = 0; i < 32; i++) {
+#if 0
+    for (int i = 0; i < 32; i++) {
         if (stone[i].isDead)
             continue;
 
         if (stone[moveID].row == stone[killID].row ) {
-            if (stone[killID].row > stone[moveID].col) {
+            if(stone[killID].row > stone[moveID].col) {
                 if(stone[i].row == stone[killID].row
                         && stone[moveID].col < stone[i].col
                         && stone[i].col < stone[killID].col)
@@ -262,8 +262,8 @@ bool Board::canMovePAO(int moveID, int row, int col, int killID)
             }
         }
         if (stone[moveID].col == stone[killID].col ) {
-            if (row > stone[moveID].row) {
-                if (stone[i].col == stone[killID].col
+            if(row > stone[moveID].row) {
+                if(stone[i].col == stone[killID].col
                         && stone[moveID].row < stone[i].row
                         && stone[i].row < stone[killID].row)
                     count3++;
@@ -274,47 +274,56 @@ bool Board::canMovePAO(int moveID, int row, int col, int killID)
                     count4++;
             }
         }
-    }*/
+    }
+#endif
     if (stone[moveID].row == row ) {
         if (col > stone[moveID].col) {
-            for (int i = stone[moveID].col + 1;i<col;i++) {
+            for (int i = stone[moveID].col + 1; i < col; i++) {
                 if (getStoneID(row, i) != -1)
                     count1++;
+                if (count1 > 1)
+                    break;
             }
         } else {
             for (int i = col + 1; i < stone[moveID].col; i++) {
                 if (getStoneID(row, i) != -1)
                     count2++;
+                if (count2 > 1)
+                    break;
             }
         }
-    } else if (stone[moveID].col == col) {
+    } else if (stone[moveID].col == col ) {
         if (row > stone[moveID].row) {
             for (int i = stone[moveID].row + 1; i < row; i++) {
                 if (getStoneID(i, col) != -1)
                     count3++;
+                if (count3 > 1)
+                    break;
             }
         } else {
             for (int i = row + 1; i < stone[moveID].row; i++) {
                 if (getStoneID(i, col) != -1)
                     count4++;
+                if (count4 > 1)
+                    break;
             }
         }
     }
-    return count1 == 1 || count2 == 1 ||count3 == 1 || count4 == 1;
+    return count1 == 1 || count2 == 1 || count3 == 1 || count4 == 1;
 }
 
 bool Board::canMoveMA(int moveID, int row, int col)
 {
     int rowDistance = abs(stone[moveID].row - row);
     int colDistance = abs(stone[moveID].col - col);
-    if (rowDistance == 2) {  // 在行上别马腿
+    if (rowDistance == 2) { // 在行上别马腿
         int centerRow = (stone[moveID].row + row) / 2;
         int centerCol = stone[moveID].col;
         if (getStoneID(centerRow, centerCol) != -1)
             return false;
     }
-    if (colDistance == 2) {  // 在列上别马腿
-        int centerCol = (stone[moveID].col + col)/2;
+    if (colDistance == 2) { // 在列上别马腿
+        int centerCol = (stone[moveID].col + col) / 2;
         int centerRow = stone[moveID].row;
         if (getStoneID(centerRow, centerCol) != -1)
             return false;
@@ -349,7 +358,7 @@ bool Board::canMoveXIANG(int moveID, int row, int col)
 
 bool Board::canMoveCHE(int moveID, int row, int col)
 {
-    if( !(stone[moveID].row == row || stone[moveID].col == col) )
+    if ( !(stone[moveID].row == row || stone[moveID].col == col) )
         return false;
 
     // 判断移动后和移动前的位置之间是否有棋子
@@ -359,7 +368,7 @@ bool Board::canMoveCHE(int moveID, int row, int col)
 bool Board::canMoveBING(int moveID, int row, int col)
 {
     if (stone[moveID].isRed == isRedSide) {
-        if (row > stone[moveID].row)   // 往回走
+        if (row > stone[moveID].row) // 往回走
             return false;
 
         if (stone[moveID].row > 4) {
@@ -367,7 +376,7 @@ bool Board::canMoveBING(int moveID, int row, int col)
                 return false;
         }
     } else {
-        if (row < stone[moveID].row)  // back off
+        if (row < stone[moveID].row) // back off
             return false;
 
         if (stone[moveID].row < 5) {
@@ -393,7 +402,7 @@ bool Board::canMoveJIANG(int moveID, int row, int col)
         }
     } else {
         if (stone[20].row == row && stone[20].col == col && stone[4].col == stone[20].col) {
-            for (int i = stone[4].row + 1;i<stone[20].row;i++) {
+            for (int i = stone[4].row + 1; i < stone[20].row; i++) {
                 if (getStoneID(i, col) != -1)
                     return false;
             }
@@ -407,6 +416,7 @@ bool Board::canMoveJIANG(int moveID, int row, int col)
         if (row > 2 || row < 0)
             return false;
     }
+
     if (col < 3 || col > 5)
         return false;
 
@@ -433,17 +443,16 @@ bool Board::canMoveSI(int moveID, int row, int col)
     int d = abs(dr) * 10 + abs(dc);
     return d == 11;
 }
-
 void Board::clicked(int clickedID, int row, int col)
 {
     if (selectedID == -1) {    // 假设是第一次被点击，那么selectedID应该被重新赋值
         if (clickedID != -1) { // 在上一个假设后，这一次假设点击的地方是有棋子的
             if (stone[clickedID].isRed == isRedTurn) { // 再在上一次假设后，点击的棋子是轮到的一方的
-                selectedID = clickedID;   // 经上面全部假设后，那么该棋子被选中
+                selectedID = clickedID;  // 经上面全部假设后，那么该棋子被选中
                 update();
             }
         }
-    } else {  // 已经在上一次点击的时候选择了棋子,那么这时候应该移动棋子
+    } else { // 已经在上一次点击的时候选择了棋子,那么这时候应该移动棋子
         if (canMove(selectedID, row, col, clickedID)) {
             this->saveStep(selectedID, clickedID, row, col, this->backSteps);
            /* qDebug()<<stone[this->backSteps[backSteps.size()-1]->moveID].name()<<"form"<<
@@ -468,7 +477,8 @@ bool Board::isLineNull(int moveID, int row, int col)
             }
             return true;
         } else {
-            for (int i = col + 1; i<stone[moveID].col; i++) {
+            for (int i = col + 1; i < stone[moveID].col; i++)
+            {
                 if (getStoneID(row, i) != -1)
                     return false;
             }
@@ -496,27 +506,29 @@ void Board::moveStone(int selectedID, int row, int col)
 {
     stone[selectedID].row = row;
     stone[selectedID].col = col;
-    isRedTurn = !isRedTurn;      // 轮到另一方下棋
+    isRedTurn = !isRedTurn;  // 轮到另一方下棋
 }
+
 void Board::moveStone(int selectedID, int killID, int row, int col)
 {
     stone[selectedID].row = row;
     stone[selectedID].col = col;
     killStone(killID);
-    isRedTurn = !isRedTurn;    // 轮到另一方下棋
+    isRedTurn = !isRedTurn; // 轮到另一方下棋
 }
 
 void Board::killStone(int killID)
 {
-    if (killID == -1)        // 这次点击的地方没有棋子
+    if (killID == -1)  // 这次点击的地方没有棋子
        return;
-    else   // 这次点击的地方有棋子
-        stone[killID].isDead = true;    // 上面的棋子被吃掉
+
+    // 这次点击的地方有棋子
+    stone[killID].isDead = true; // 上面的棋子被吃掉
 }
 
 void Board::reviveStone(int killID)
 {
-    if (killID != 1 && stone[killID].isDead)
+    if (killID != -1 && stone[killID].isDead)
         stone[killID].isDead = false;
 }
 
@@ -539,12 +551,12 @@ void Board::saveStep(int moveID, int killID, int rowTo, int colTo,
 int Board::getStoneID(int row, int col)
 {
     int i = 0;
-    for ( ; i < 32; i++) { // 用循环后i代表被点击的棋子的ID
+    for ( ; i<32; i++) { // 用循环后i代表被点击的棋子的ID
         if (stone[i].row == row && stone[i].col == col && stone[i].isDead == false)
             break;
     }
-    int clickedID = -1;   // 每次点击棋子后clickedID会被重新赋值
-    if (i < 32)              // 表示点击的地方是有棋子的
+    int clickedID = -1;  // 每次点击棋子后clickedID会被重新赋值
+    if (i < 32)          // 表示点击的地方是有棋子的
         clickedID = i;
 
     return clickedID;
@@ -553,7 +565,7 @@ int Board::getStoneID(int row, int col)
 void Board::aboutSlot()
 {
     QMessageBox::information(this,"关于","       作者：Ifan Tsai\n  "
-                                        "        版本：2.0\n"
+                                        "        版本：2.1\n"
                                         "Coder will change the world ! ");
 }
 
@@ -582,7 +594,6 @@ void Board::returnSlot()
 {
     int ret = QMessageBox::warning(this, "返回", "确定要放弃当前棋局返回主界面？",
                          QMessageBox::No | QMessageBox::Yes);
-
     if (ret == QMessageBox::Yes) {
         openWidget *w = new openWidget;
         w->show();
